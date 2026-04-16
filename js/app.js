@@ -53,6 +53,13 @@ function openModal(editId = null) {
 function closeModal() {
   document.getElementById('modal').classList.add('hidden');
   currentEditId = null;
+  ['input-nome', 'input-setor', 'input-categoria', 'input-descricao'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
+    el.classList.add('border-gray-600');
+    const errorEl = document.getElementById(id + '-error');
+    if (errorEl) errorEl.remove();
+  });
 }
 
 function setupModalListeners() {
@@ -82,6 +89,42 @@ function setupFormListeners() {
       status:       form.status.value,
       impacto:      form.impacto.value.trim(),
     };
+
+    const requiredFields = [
+      { field: 'input-nome',      value: data.nome,      label: 'Nome do Colaborador' },
+      { field: 'input-setor',     value: data.setor,     label: 'Setor/Departamento' },
+      { field: 'input-categoria', value: data.categoria, label: 'Categoria ESG' },
+      { field: 'input-descricao', value: data.descricao, label: 'Descrição da Ação' },
+    ];
+
+    let firstInvalid = null;
+    requiredFields.forEach(({ field, value, label }) => {
+      const el = document.getElementById(field);
+      const errorId = field + '-error';
+      let errorEl = document.getElementById(errorId);
+
+      if (!value) {
+        el.classList.add('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
+        el.classList.remove('border-gray-600', 'focus:ring-emerald-500', 'focus:border-emerald-500');
+        if (!errorEl) {
+          errorEl = document.createElement('p');
+          errorEl.id = errorId;
+          errorEl.className = 'text-red-400 text-xs mt-1';
+          el.parentElement.appendChild(errorEl);
+        }
+        errorEl.textContent = `${label} é obrigatório.`;
+        if (!firstInvalid) firstInvalid = el;
+      } else {
+        el.classList.remove('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
+        el.classList.add('border-gray-600');
+        if (errorEl) errorEl.remove();
+      }
+    });
+
+    if (firstInvalid) {
+      firstInvalid.focus();
+      return;
+    }
 
     if (currentEditId) {
       updateItem(currentEditId, data);

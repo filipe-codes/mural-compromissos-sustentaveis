@@ -196,7 +196,7 @@ Ponto de entrada da aplicação. Conecta as camadas de dados e UI.
 |---|---|
 | `loadAndRender()` | Carrega dados, atualiza filtros de setor, KPIs e mural |
 | `openModal(editId?)` | Abre o modal; se `editId` for fornecido, pré-preenche o formulário |
-| `closeModal()` | Fecha o modal e limpa o estado de edição |
+| `closeModal()` | Fecha o modal, limpa o estado de edição e remove erros de validação |
 | `editItem(id)` | Dispara a abertura do modal em modo edição (chamado pelos cards) |
 | `confirmDelete(id)` | Exibe confirmação e, se aceito, deleta e re-renderiza |
 | `applyFilters(items)` | Aplica todos os filtros ativos e retorna o array filtrado |
@@ -277,7 +277,7 @@ Cada compromisso é armazenado como objeto JSON:
 ### Segurança
 - Toda string renderizada no DOM passa por `escapeHtml()`, prevenindo ataques XSS
 - Dados armazenados apenas localmente (sem transmissão a servidores externos)
-- Campos de formulário com `novalidate` — validação nativa HTML5 mantida via `required`
+- Campos de formulário com `novalidate` — validação feita via JavaScript com feedback visual (borda vermelha + mensagem de erro por campo)
 
 ---
 
