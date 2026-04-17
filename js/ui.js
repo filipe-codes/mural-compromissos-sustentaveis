@@ -43,6 +43,29 @@ function getStatusIcon(status) {
   return map[status] || '';
 }
 
+// ── Toast ───────────────────────────────────────────────────────────────────
+
+function showToast(message, type = 'error') {
+  const existing = document.getElementById('toast');
+  if (existing) existing.remove();
+
+  const colors = type === 'error'
+    ? 'bg-red-900 border-red-700 text-red-100'
+    : 'bg-emerald-900 border-emerald-700 text-emerald-100';
+
+  const toast = document.createElement('div');
+  toast.id = 'toast';
+  toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-xl border shadow-lg text-sm font-medium ${colors} transition-opacity duration-300 whitespace-nowrap`;
+  toast.setAttribute('role', 'alert');
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
 // ── Card ────────────────────────────────────────────────────────────────────
 
 function createCard(item) {

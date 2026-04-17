@@ -57,9 +57,13 @@ function closeModal() {
     const el = document.getElementById(id);
     el.classList.remove('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
     el.classList.add('border-gray-600');
-    const errorEl = document.getElementById(id + '-error');
-    if (errorEl) errorEl.remove();
+    document.getElementById(id + '-error')?.remove();
   });
+
+  const dateEl = document.getElementById('input-data');
+  dateEl.classList.remove('border-yellow-500');
+  dateEl.classList.add('border-gray-600');
+  document.getElementById('input-data-warn')?.remove();
 }
 
 function setupModalListeners() {
@@ -126,14 +130,41 @@ function setupFormListeners() {
       return;
     }
 
-    if (currentEditId) {
-      updateItem(currentEditId, data);
-    } else {
-      addItem(data);
+    if (data.dataPrevista) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const chosen = new Date(data.dataPrevista + 'T00:00:00');
+      if (chosen < today && data.status !== 'Concluído') {
+        const dateEl = document.getElementById('input-data');
+        dateEl.classList.add('border-yellow-500');
+        dateEl.classList.remove('border-gray-600');
+        let warn = document.getElementById('input-data-warn');
+        if (!warn) {
+          warn = document.createElement('p');
+          warn.id = 'input-data-warn';
+          warn.className = 'text-yellow-400 text-xs mt-1';
+          dateEl.parentElement.appendChild(warn);
+        }
+        warn.textContent = 'A data prevista já passou.';
+      } else {
+        const dateEl = document.getElementById('input-data');
+        dateEl.classList.remove('border-yellow-500');
+        dateEl.classList.add('border-gray-600');
+        document.getElementById('input-data-warn')?.remove();
+      }
     }
 
-    closeModal();
-    loadAndRender();
+    try {
+      if (currentEditId) {
+        updateItem(currentEditId, data);
+      } else {
+        addItem(data);
+      }
+      closeModal();
+      loadAndRender();
+    } catch (e) {
+      showToast(e.message);
+    }
   });
 }
 
@@ -146,11 +177,42 @@ function editItem(id) {
 function confirmDelete(id) {
   const item = getById(id);
   if (!item) return;
-  const ok = window.confirm(`Deseja excluir o compromisso de "${item.nome}"?\n\nEsta ação não pode ser desfeita.`);
-  if (ok) {
+
+  const modal   = document.getElementById('confirm-modal');
+  const message = document.getElementById('confirm-message');
+  const btnOk   = document.getElementById('confirm-ok');
+  const btnCancel = document.getElementById('confirm-cancel');
+
+  message.textContent = `Deseja excluir o compromisso de "${item.nome}"?`;
+  modal.classList.remove('hidden');
+  btnCancel.focus();
+
+  function close() {
+    modal.classList.add('hidden');
+    btnOk.removeEventListener('click', onOk);
+    btnCancel.removeEventListener('click', close);
+    modal.removeEventListener('click', onBackdrop);
+    document.removeEventListener('keydown', onKey);
+  }
+
+  function onOk() {
+    close();
     deleteItem(id);
     loadAndRender();
   }
+
+  function onBackdrop(e) {
+    if (e.target === modal) close();
+  }
+
+  function onKey(e) {
+    if (e.key === 'Escape') close();
+  }
+
+  btnOk.addEventListener('click', onOk);
+  btnCancel.addEventListener('click', close);
+  modal.addEventListener('click', onBackdrop);
+  document.addEventListener('keydown', onKey);
 }
 
 // ── Filters ───────────────────────────────────────────────────────────────────

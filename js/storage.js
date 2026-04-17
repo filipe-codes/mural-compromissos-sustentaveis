@@ -9,12 +9,23 @@ function generateId() {
 }
 
 function getAll() {
-  const data = localStorage.getItem(STORAGE_KEY);
-  return data ? JSON.parse(data) : [];
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
 }
 
 function saveAll(items) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  } catch (e) {
+    if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+      throw new Error('Armazenamento cheio. Exclua compromissos antigos e tente novamente.');
+    }
+    throw new Error('Erro ao salvar os dados. Tente novamente.');
+  }
 }
 
 function addItem(item) {
