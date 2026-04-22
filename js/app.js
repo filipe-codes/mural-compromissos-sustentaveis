@@ -1,8 +1,6 @@
-// ── State ────────────────────────────────────────────────────────────────────
 
 let currentEditId = null;
 
-// ── Init ─────────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
   loadAndRender();
@@ -18,14 +16,13 @@ function loadAndRender() {
   renderMural(applyFilters(items));
 }
 
-// ── Modal ─────────────────────────────────────────────────────────────────────
 
 function openModal(editId = null) {
   currentEditId = editId;
-  const modal     = document.getElementById('modal');
-  const title     = document.getElementById('modal-title');
-  const saveBtn   = document.getElementById('btn-save');
-  const form      = document.getElementById('commitment-form');
+  const modal     = document.querySelector('#modal');
+  const title     = document.querySelector('#modal-title');
+  const saveBtn   = document.querySelector('#btn-save');
+  const form      = document.querySelector('#commitment-form');
 
   form.reset();
 
@@ -51,25 +48,25 @@ function openModal(editId = null) {
 }
 
 function closeModal() {
-  document.getElementById('modal').classList.add('hidden');
+  document.querySelector('#modal').classList.add('hidden');
   currentEditId = null;
   ['input-nome', 'input-setor', 'input-categoria', 'input-descricao'].forEach(id => {
-    const el = document.getElementById(id);
+    const el = document.querySelector(`#${id}`);
     el.classList.remove('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
     el.classList.add('border-gray-600');
-    document.getElementById(id + '-error')?.remove();
+    document.querySelector(`#${id}-error`)?.remove();
   });
 
-  const dateEl = document.getElementById('input-data');
+  const dateEl = document.querySelector('#input-data');
   dateEl.classList.remove('border-yellow-500');
   dateEl.classList.add('border-gray-600');
-  document.getElementById('input-data-warn')?.remove();
+  document.querySelector('#input-data-warn')?.remove();
 }
 
 function setupModalListeners() {
-  document.getElementById('btn-new').addEventListener('click', () => openModal());
-  document.getElementById('btn-cancel').addEventListener('click', closeModal);
-  document.getElementById('modal').addEventListener('click', e => {
+  document.querySelector('#btn-new').addEventListener('click', () => openModal());
+  document.querySelector('#btn-cancel').addEventListener('click', closeModal);
+  document.querySelector('#modal').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeModal();
   });
   document.addEventListener('keydown', e => {
@@ -77,10 +74,9 @@ function setupModalListeners() {
   });
 }
 
-// ── Form ──────────────────────────────────────────────────────────────────────
 
 function setupFormListeners() {
-  document.getElementById('commitment-form').addEventListener('submit', e => {
+  document.querySelector('#commitment-form').addEventListener('submit', e => {
     e.preventDefault();
     const form = e.target;
 
@@ -103,9 +99,9 @@ function setupFormListeners() {
 
     let firstInvalid = null;
     requiredFields.forEach(({ field, value, label }) => {
-      const el = document.getElementById(field);
-      const errorId = field + '-error';
-      let errorEl = document.getElementById(errorId);
+      const el = document.querySelector(`#${field}`);
+      const errorId = `${field}-error`;
+      let errorEl = document.querySelector(`#${errorId}`);
 
       if (!value) {
         el.classList.add('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
@@ -135,10 +131,10 @@ function setupFormListeners() {
       today.setHours(0, 0, 0, 0);
       const chosen = new Date(data.dataPrevista + 'T00:00:00');
       if (chosen < today && data.status !== 'Concluído') {
-        const dateEl = document.getElementById('input-data');
+        const dateEl = document.querySelector('#input-data');
         dateEl.classList.add('border-yellow-500');
         dateEl.classList.remove('border-gray-600');
-        let warn = document.getElementById('input-data-warn');
+        let warn = document.querySelector('#input-data-warn');
         if (!warn) {
           warn = document.createElement('p');
           warn.id = 'input-data-warn';
@@ -147,10 +143,10 @@ function setupFormListeners() {
         }
         warn.textContent = 'A data prevista já passou.';
       } else {
-        const dateEl = document.getElementById('input-data');
+        const dateEl = document.querySelector('#input-data');
         dateEl.classList.remove('border-yellow-500');
         dateEl.classList.add('border-gray-600');
-        document.getElementById('input-data-warn')?.remove();
+        document.querySelector('#input-data-warn')?.remove();
       }
     }
 
@@ -168,7 +164,6 @@ function setupFormListeners() {
   });
 }
 
-// ── Edit / Delete ─────────────────────────────────────────────────────────────
 
 function editItem(id) {
   openModal(id);
@@ -178,10 +173,10 @@ function confirmDelete(id) {
   const item = getById(id);
   if (!item) return;
 
-  const modal   = document.getElementById('confirm-modal');
-  const message = document.getElementById('confirm-message');
-  const btnOk   = document.getElementById('confirm-ok');
-  const btnCancel = document.getElementById('confirm-cancel');
+  const modal   = document.querySelector('#confirm-modal');
+  const message = document.querySelector('#confirm-message');
+  const btnOk   = document.querySelector('#confirm-ok');
+  const btnCancel = document.querySelector('#confirm-cancel');
 
   message.textContent = `Deseja excluir o compromisso de "${item.nome}"?`;
   modal.classList.remove('hidden');
@@ -215,18 +210,17 @@ function confirmDelete(id) {
   document.addEventListener('keydown', onKey);
 }
 
-// ── Filters ───────────────────────────────────────────────────────────────────
 
 function setupFilterListeners() {
   ['filter-search', 'filter-setor', 'filter-categoria', 'filter-status'].forEach(id => {
-    document.getElementById(id).addEventListener('input', applyAndRender);
+    document.querySelector(`#${id}`).addEventListener('input', applyAndRender);
   });
 
-  document.getElementById('btn-clear-filters').addEventListener('click', () => {
-    document.getElementById('filter-search').value   = '';
-    document.getElementById('filter-setor').value    = '';
-    document.getElementById('filter-categoria').value= '';
-    document.getElementById('filter-status').value   = '';
+  document.querySelector('#btn-clear-filters').addEventListener('click', () => {
+    document.querySelector('#filter-search').value   = '';
+    document.querySelector('#filter-setor').value    = '';
+    document.querySelector('#filter-categoria').value= '';
+    document.querySelector('#filter-status').value   = '';
     applyAndRender();
   });
 }
@@ -239,10 +233,10 @@ function applyAndRender() {
 }
 
 function applyFilters(items) {
-  const search    = document.getElementById('filter-search').value.trim().toLowerCase();
-  const setor     = document.getElementById('filter-setor').value;
-  const categoria = document.getElementById('filter-categoria').value;
-  const status    = document.getElementById('filter-status').value;
+  const search    = document.querySelector('#filter-search').value.trim().toLowerCase();
+  const setor     = document.querySelector('#filter-setor').value;
+  const categoria = document.querySelector('#filter-categoria').value;
+  const status    = document.querySelector('#filter-status').value;
 
   return items.filter(item => {
     if (setor     && item.setor     !== setor)     return false;
