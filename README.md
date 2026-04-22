@@ -70,11 +70,6 @@ mural-compromissos-sustentaveis/
 │   ├── ui.js           # Camada de renderização: cards, KPIs, filtros
 │   └── app.js          # Camada de controle: eventos, formulário, filtros
 │
-├── css/
-│   └── styles.css      # Estilos customizados complementares (reservado)
-│
-├── assets/
-│   └── images/         # Logotipos e imagens da organização
 │
 ├── README.md           # Esta documentação
 └── projeto_espec.md    # Especificação original do projeto
